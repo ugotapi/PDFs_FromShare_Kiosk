@@ -1,8 +1,8 @@
 # PDFs_FromShare_Kiosk
 This is a collection of shell commands to create a Kiosk to display PDFs from a Windows share on Raspberry Pi device & Raspberry PI OS - Debian Trixie. Installation is running the shell script to a terminal on the pi and Running it. 
 
-- This will display PDF files in a slideshow that are on a Windows PC or servers network share.
-- My scripts assume a username "user" is the user in these scripts. Edit the commands if needed. 
+- This will display PDF files in a slideshow on your TV with a Pi device that are stored on a Windows PC or a servers network share.
+- My scripts assume a username "user" in these scripts. Edit the commands if needed. 
 - If a PDF is added to the network share on the next crontab run for refresh.sh the file will be added to the slideshow on the Pi connected monitor.
 - The files that apache uses for the PDFs on the Pi Device are on a ramdisk. A ramdisk uses RAM to store files. This helps eliminate wear and tear to the microSD Card in the raspberry Pi devices.
 - On a reboot the files on the ramdisk are deleted. Only the PDFs in /home/user/slideshow/pdfs are brought up on boot. The next sudo -e crontab will mirror the network files. 
@@ -12,8 +12,6 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 - If a pdf is deleted from the network share and it is on the pi pdfs folder it will be deleted from the pi slideshow.
 - The Windows share should be setup with a username and password to access. 
 
-
-WIP
 
 
 
@@ -75,7 +73,7 @@ PASTE IN TO A NEW FILE
 # Configuration
 SERVER_IP="yourserver.domain.com"
 SHARE_NAME="pdfs"
-USERNAME="tvuser"
+USERNAME="windowsuser"
 PASSWD="yoursupercoolpasswordforthewindowsshare"
 DOMAIN="machinename_or_domainshortname"
 MOUNT_POINT="/mnt/smb"
