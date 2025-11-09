@@ -11,9 +11,11 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 - The index.php uses pdf.js from Mozilla https://mozilla.github.io/pdf.js/ to display multipage pdfs and cycle to the next pdf.
 - If a pdf is deleted from the network share and it is on the pi pdfs folder it will be deleted from the pi slideshow.
 - The Windows share should be setup with a username and password to access. 
+- This was done on a newly installed Raspberry Pi OS. It used the default Display server and dooes not use older x tools to make the kiosk work. 
+- It does use labwc changes to display chromiun in kiosk mode better. 
 
 
-
+INSTRUCTIONS:
 
 sudo mkdir -p /mnt/ramdisk/pdfs
 sudo nano /etc/fstab
