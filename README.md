@@ -205,7 +205,19 @@ fi
 chmod +x checkchromium.sh
 
 ----------------------------------------------------------------------------------------------------------------------
-In windows Filezilla the slideshow files to /home/user
+In windows Filezilla the slideshow files to /home/user/slideshow:
+
+mkdir /home/user/slideshow/pdfs
+mkdir /home/user/slideshow/pdfjs
+cd /home/user/slideshow/pdfjs
+wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/pdfjs/pdf.js
+wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/pdfjs/pdf.mjs
+wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/pdfjs/pdf.worker.mjs
+wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/pdfjs/pdfworker.mjs
+cd /home/user/slideshow/pdfs
+#test pdf
+wget https://raw.githubusercontent.com/TestFileHub/FileHub/main/pdf/pdf1mb.pdf
+
 
 ----------------------------------------------------------------------------------------------------------------------
 
