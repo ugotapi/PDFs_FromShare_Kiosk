@@ -20,7 +20,7 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 
 INSTRUCTIONS:
 
-sudo mkdir -p /mnt/ramdisk/pdfs
+sudo mkdir -p /mnt/ramdisk
 sudo nano /etc/fstab
 
 ----------------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ THEN AFTER REBOOT:
 ----------------------------------------------------------------------------------------------------------------
 sudo apt install cifs-utils wtype apache2 php grim tesseract-ocr imagemagick -y
 sudo cp /etc/xdg/labwc/rc.xml .config/labwc/
-nano .config/labwc/rc.xml
+sudo nano .config/labwc/rc.xml
 ----------------------------------------------------------------------------------------------------------------
 ADD THIS INTO KEYBIND:
 
