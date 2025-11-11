@@ -217,6 +217,7 @@ chmod +x checkchromium.sh
 # GET HTML FILES INTO /HOME/USER/SLIDESHOW
 
 mkdir /home/user/slideshow
+cd /home/user/slideshow
 wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/index.php
 mkdir /home/user/slideshow/pdfs
 mkdir /home/user/slideshow/pdfjs
