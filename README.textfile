@@ -3,16 +3,17 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 
 - This will display PDF files in a slideshow on your TV with a Pi device that are stored on a Windows PC or a servers network share.
 - My scripts assume a username "user" in these scripts. Edit the commands if needed. 
-- If a PDF is added to the network share on the next crontab run for refresh.sh the file will be added to the slideshow on the Pi connected monitor.
-- The files that apache uses for the PDFs on the Pi Device are on a ramdisk. A ramdisk uses RAM to store files. This helps eliminate wear and tear to the microSD Card in the raspberry Pi devices.
-- On a reboot the files on the ramdisk are deleted. Only the PDFs in /home/user/slideshow/pdfs are brought up on boot. The next sudo -e crontab will mirror the network files. 
+- If a PDF is added to the network share on the next crontab run for refresh.sh, the file will be added to the slideshow on the Pi connected monitor.
+- The files that Apache uses for the PDFs on the Pi Device are on a ramdisk. A ramdisk uses RAM to store files. This helps eliminate wear and tear to the microSD Card in the raspberry Pi devices.
+- On a reboot, the files on the ramdisk are deleted. Only the PDFs in /home/user/slideshow/pdfs are brought up on boot. The next sudo -e crontab will mirror the network files over.
 - The working html for Apache is copied over from the /home/user/slideshow folder for Apache to use for the slideshow.
-- There is a script that checks to see if Chromium crashes displaying the words "Aw, Snap". If the error messsage says Aw Snap. It stops and restarts Chromium.
-- The index.php uses pdf.js from Mozilla https://mozilla.github.io/pdf.js/ to display multipage pdfs and cycle to the next pdf.
-- If a pdf is deleted from the network share and it is on the pi pdfs folder it will be deleted from the pi slideshow.
+- the first script refresh.sh runs as a sudo to map the drive needed. 
+- There is a seond script that uses crontab as "user" and checks to see if Chromium crashes displaying the words "Aw, Snap". If the error messsage says Aw Snap. It stops and restarts Chromium.
+- The index.php uses pdf.js from Mozilla https://mozilla.github.io/pdf.js/ to display multipage pdfs and cycle to the next pdf. The time to display each pdf screen is in here. 
+- If a pdf is deleted from the network share and it is on the Pi pdfs folder it will be deleted from the Pi slideshow.
 - The Windows share should be setup with a username and password to access. 
-- This was done on a newly installed Raspberry Pi OS. It used the default Display server and dooes not use older x tools to make the kiosk work. 
-- It does use labwc changes to display chromiun in kiosk mode better. 
+- This was done on a newly installed Raspberry Pi OS Novermber 2025. It used the default Display server and dooes not use older X Windows tools to make the kiosk work. 
+- It does use labwc changes to display Chromiun in kiosk mode better. 
 
 
 INSTRUCTIONS:
@@ -25,10 +26,10 @@ add new line at end of file and save:
 tmpfs   /mnt/ramdisk   tmpfs   defaults,size=1024M,mode=1777   0   0
 ----------------------------------------------------------------------------------------------------------------		
 sudo reboot
-
-THEN:
+----------------------------------------------------------------------------------------------------------------
+THEN AFTER REBOOT:
+----------------------------------------------------------------------------------------------------------------
 sudo apt install cifs-utils wtype apache2 php grim tesseract-ocr imagemagick -y
-
 sudo cp /etc/xdg/labwc/rc.xml .config/labwc/
 nano .config/labwc/rc.xml
 ----------------------------------------------------------------------------------------------------------------
@@ -45,28 +46,21 @@ CHANGE WINDOW RULES TO THIS:
     <windowRule identifier="*" serverDecoration="no"/>
   </windowRules>
 
-  
-
 ----------------------------------------------------------------------------------------------------------------
-
 nano .config/wf-panel-pi/wf-panel-pi.ini
-
 ----------------------------------------------------------------------------------------------------------------
-Add this to the new file:
+ADD:
 
 [panel]
 notify_enable=false
 notify_timeout=15
 autohide=true
 autohide_duration=500
-
 ----------------------------------------------------------------------------------------------------------------
-
-
 nano refresh.sh
 ----------------------------------------------------------------------------------------------------------------
 
-PASTE IN TO A NEW FILE:
+PASTE IN TO A NEW FILE. MAKE SURE TO CHANGE THE CONFIGURATION AREA TO CONNECT TO YOUR WINDOWS SHARE. YOU WILL WANT TO USE ADVANCED SHARING FOR A LONE WINDOWS PC SHARE:
 
 #!/bin/bash
 
@@ -201,9 +195,7 @@ fi
 ----------------------------------------------------------------------------------------------------------------
 
 chmod +x checkchromium.sh
-
-----------------------------------------------------------------------------------------------------------------
-get html for slideshow files to /home/user/slideshow:
+# GET HTML FILES INTO /HOME/USER/SLIDESHOW
 
 mkdir /home/user/slideshow
 wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/index.php
@@ -217,30 +209,22 @@ wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/m
 cd /home/user/slideshow/pdfs
 #test pdf
 wget https://raw.githubusercontent.com/TestFileHub/FileHub/main/pdf/pdf1mb.pdf
-
-
------------------------------------------------------------------------------------------------------------------
-
 sudo crontab -e
 
 ------------------------------------------------------------------------------------------------------------------
-FOR ROOT ADD A NEW LINE:
+CHOSE NANO FOR YOUR SAKE AND ADD A NEW LINE TO RUN EVERY 5 MINUTES:
 
-0 * * * * /home/user/refresh.sh
+*/5 * * * * /home/user/refresh.sh
 -----------------------------------------------------------------------------------------------------------------
-
 
 crontab -e
 
 -----------------------------------------------------------------------------------------------------------------
-ADD A NEW LINE:
+CHOOSE NANO AND ADD A NEW LINE RUN AT 11 PAST EACH HOUR:
 11 * * * * /home/user/checkchromium.sh
 -----------------------------------------------------------------------------------------------------------------
 
-
-
 sudo nano /etc/apache2/apache2.conf 
-
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -254,7 +238,6 @@ PASTE THIS IN THE DIRECTORY AREA:
 
 -----------------------------------------------------------------------------------------------------------------
 
-
 sudo nano /etc/apache2/sites-available/000-default.conf 
 
 -----------------------------------------------------------------------------------------------------------------
@@ -266,6 +249,8 @@ CHANGE DOCUMENTROOT AREA TO RAMDISK:
 -----------------------------------------------------------------------------------------------------------------
 
 sudo reboot
+
+PUT SOME UNIQUE PDFS IN YOUR WINDOWS SHARE:
 
 
  
