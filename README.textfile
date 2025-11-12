@@ -279,13 +279,22 @@ CustomLog ${APACHE_LOG_DIR}/access.log combined
 
 REPLACE IT WITH THIS BLOCK:
 
-# Ignore slideshow static files (PDFs and PDF.js)
+# Ignore slideshow static files (PDFs, JS, JSON, etc.)
 SetEnvIf Request_URI "\.pdf$" dontlog
 SetEnvIf Request_URI "\.mjs$" dontlog
 SetEnvIf Request_URI "\.js$" dontlog
 SetEnvIf Request_URI "\.json$" dontlog
 
+# Ignore kiosk self-refresh hits to index.php or the slideshow root
+SetEnvIf Request_URI "^/slideshow/$" dontlog
+SetEnvIf Request_URI "^/slideshow/index\.php$" dontlog
+
+# (Optional) ignore all requests from localhost
+# SetEnvIf Remote_Addr "127\.0\.0\.1" dontlog
+
+# Final access log rule
 CustomLog ${APACHE_LOG_DIR}/access.log combined env=!dontlog
+
 
 -----------------------------------------------------------------------------------------------------------------
 sudo reboot
