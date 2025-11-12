@@ -64,8 +64,10 @@ viewer.appendChild(canvas);
 
 // Load PDF and render first page
 function loadPDF(file) {
-    const url = 'pdfs/' + encodeURIComponent(file) + '?t=' + Date.now();
-    console.log('Loading:', file);
+    // Use mtime instead of Date.now() to avoid unnecessary reloads
+    const t = pdfMtimes[file] || 0;
+    const url = 'pdfs/' + encodeURIComponent(file) + '?t=' + t;
+    console.log('Loading:', file, '(mtime:', t, ')');
 
     pdfjsLib.getDocument(url).promise.then(pdf => {
         pdfDoc = pdf;
@@ -88,9 +90,6 @@ function renderPage(num) {
 
         const renderContext = { canvasContext: ctx, viewport: scaledViewport };
         page.render(renderContext);
-
-
-
     });
 }
 
@@ -122,11 +121,19 @@ async function checkForUpdates() {
             if (!pdfMtimes[f.name] || pdfMtimes[f.name] !== f.mtime) {
                 console.log('Updated PDF detected:', f.name);
                 pdfMtimes[f.name] = f.mtime;
+                // Reload only if the current PDF changed
                 if (f.name === pdfFiles[currentIndex].name) {
-                    loadPDF(f.name); // reload current PDF if updated
+                    loadPDF(f.name);
                 }
             }
         });
+
+        // Replace list if new files were added or removed
+        if (latest.length !== pdfFiles.length) {
+            pdfFiles = latest;
+            pdfMtimes = Object.fromEntries(latest.map(f => [f.name, f.mtime]));
+        }
+
     } catch (e) {
         console.error('Error checking PDF updates:', e);
     }
