@@ -230,6 +230,7 @@ wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/m
 cd /home/user/slideshow/pdfs
 #test pdf
 wget https://raw.githubusercontent.com/TestFileHub/FileHub/main/pdf/pdf1mb.pdf
+sudo chown user:www-data -R /home/user/slideshow
 sudo crontab -e
 
 ------------------------------------------------------------------------------------------------------------------
