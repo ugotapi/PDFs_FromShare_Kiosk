@@ -21,6 +21,7 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 INSTRUCTIONS:
 
 sudo mkdir -p /mnt/ramdisk
+sudo chown user:www-data -R /mnt/ramdisk
 sudo nano /etc/fstab
 
 ----------------------------------------------------------------------------------------------------------------
