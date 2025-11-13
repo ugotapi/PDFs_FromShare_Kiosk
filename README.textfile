@@ -26,7 +26,7 @@ sudo nano /etc/fstab
 
 ----------------------------------------------------------------------------------------------------------------
 add new line at end of file and save:	
-tmpfs   /mnt/ramdisk   tmpfs   defaults,size=1024M,mode=1777   0   0
+tmpfs   /mnt/ramdisk   tmpfs   uid=user,gid=www-data,size=1024M,mode=775   0   0
 ----------------------------------------------------------------------------------------------------------------		
 sudo reboot
 ----------------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ nano .config/labwc/autostart
 PASTE:
 
 #dump html files to ramdisk that Apache is looking to run
-cp -r --no-preserve=ownership /home/user/slideshow/* /mnt/ramdisk
+cp -a /home/user/slideshow /mnt/ramdisk
 
 
 #kiosk mode chromium
@@ -231,7 +231,7 @@ wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/m
 cd /home/user/slideshow/pdfs
 #test pdf
 wget https://raw.githubusercontent.com/TestFileHub/FileHub/main/pdf/pdf1mb.pdf
-sudo chown user:www-data -R /home/user/slideshow
+
 sudo crontab -e
 
 ------------------------------------------------------------------------------------------------------------------
