@@ -83,7 +83,6 @@ nano refresh.sh
 PASTE IN TO A NEW FILE. MAKE SURE TO CHANGE THE CONFIGURATION AREA TO CONNECT TO YOUR WINDOWS SHARE. YOU WILL WANT TO USE ADVANCED SHARING FOR A LONE WINDOWS PC SHARE:
 
 #!/bin/bash
-
 # Configuration
 SERVER_IP="192.168.12.95"
 SHARE_NAME="pdfs"
@@ -210,8 +209,6 @@ fi
 ----------------------------------------------------------------------------------------------------------------
 
 chmod +x checkchromium.sh
-# GET HTML FILES INTO /HOME/USER/SLIDESHOW
-
 mkdir /home/user/slideshow
 cd /home/user/slideshow
 wget https://raw.githubusercontent.com/ugotapi/PDFs_FromShare_Kiosk/refs/heads/main/slideshow/index.php
