@@ -145,7 +145,7 @@ sudo umount "$MOUNT_POINT"
 
 echo "📝 Regenerating pdf_files.json..."
 sudo php "$PHP_INDEX" --regen-cache
-
+sudo chown user:www-data -R /mnt/ramdisk/slideshow
 echo "🎉 Refreshing slideshow..."
 sudo -u user WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000 /usr/bin/wtype -M ctrl -P F5 -p F5 -m ctrl
 
