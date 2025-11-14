@@ -1,35 +1,79 @@
 <?php
+
 $pdfFolder = __DIR__ . '/pdfs';
 $cacheFile = __DIR__ . '/pdf_files.json';
 $cacheTTL = 3600; // 1 hour cache
 
-// Function to build PDF list
 function getPdfFiles($folder) {
     $files = glob($folder . '/*.pdf');
-    return array_map(fn($f) => ['name' => basename($f), 'mtime' => filemtime($f)], $files);
+    $result = [];
+    foreach ($files as $f) {
+        $result[] = [
+            'name' => basename($f),
+            'mtime' => filemtime($f)
+        ];
+    }
+    return $result;
 }
 
-// If this is an AJAX request for updates, return JSON
-if (isset($_GET['json'])) {
-    if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTTL) {
-        $pdfFiles = json_decode(file_get_contents($cacheFile), true);
-    } else {
-        $pdfFiles = getPdfFiles($pdfFolder);
-        file_put_contents($cacheFile, json_encode($pdfFiles));
-    }
+function regenCache($cacheFile, $pdfFolder) {
+    $list = getPdfFiles($pdfFolder);
+    file_put_contents($cacheFile, json_encode($list, JSON_PRETTY_PRINT));
+    return $list;
+}
 
-    header('Content-Type: application/json');
-    echo json_encode($pdfFiles);
+$forceRegen = isset($argv) && in_array("--regen-cache", $argv);
+
+// ------------ CLI REGEN MODE ------------
+if ($forceRegen) {
+    regenCache($cacheFile, $pdfFolder);
     exit;
 }
 
-// Otherwise, serve the HTML page
-if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTTL) {
-    $pdfFiles = json_decode(file_get_contents($cacheFile), true);
+// ------------ AJAX JSON MODE ------------
+if (isset($_GET['json'])) {
+
+    $current = getPdfFiles($pdfFolder);
+
+    if (file_exists($cacheFile)) {
+        $cached = json_decode(file_get_contents($cacheFile), true);
+
+        // If files differ → update cache
+        if ($cached !== $current) {
+            file_put_contents($cacheFile, json_encode($current));
+            $cached = $current;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($cached);
+        exit;
+    }
+
+    // No cache yet
+    file_put_contents($cacheFile, json_encode($current));
+    header('Content-Type: application/json');
+    echo json_encode($current);
+    exit;
+}
+
+// ------------ NORMAL PAGE LOAD ------------
+$current = getPdfFiles($pdfFolder);
+
+if (file_exists($cacheFile)) {
+    $cached = json_decode(file_get_contents($cacheFile), true);
+
+    // Regenerate cache if PDFs changed
+    if ($cached !== $current) {
+        file_put_contents($cacheFile, json_encode($current));
+        $cached = $current;
+    }
+
+    $pdfFiles = $cached;
 } else {
-    $pdfFiles = getPdfFiles($pdfFolder);
+    $pdfFiles = $current;
     file_put_contents($cacheFile, json_encode($pdfFiles));
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -62,7 +106,6 @@ const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 viewer.appendChild(canvas);
 
-// Load PDF and render first page
 function loadPDF(file) {
     const url = 'pdfs/' + encodeURIComponent(file) + '?t=' + Date.now();
     console.log('Loading:', file);
@@ -71,10 +114,9 @@ function loadPDF(file) {
         pdfDoc = pdf;
         currentPageNum = 1;
         renderPage(currentPageNum);
-    }).catch(err => console.error('Failed to load PDF:', err));
+    });
 }
 
-// Render a page on the single canvas
 function renderPage(num) {
     if (!pdfDoc) return;
 
@@ -86,15 +128,10 @@ function renderPage(num) {
         canvas.width = scaledViewport.width;
         canvas.height = scaledViewport.height;
 
-        const renderContext = { canvasContext: ctx, viewport: scaledViewport };
-        page.render(renderContext);
-
-
-
+        page.render({ canvasContext: ctx, viewport: scaledViewport });
     });
 }
 
-// Move to next page or next PDF
 function nextPage() {
     if (!pdfDoc) return;
 
@@ -107,36 +144,37 @@ function nextPage() {
     }
 }
 
-// Start slideshow (30s per page)
 function startSlideshow() {
     setInterval(nextPage, 30000);
 }
 
-// Check for updated PDFs every 10 minutes
 async function checkForUpdates() {
     try {
         const response = await fetch('?json&_=' + Date.now());
         const latest = await response.json();
 
         latest.forEach(f => {
-            if (!pdfMtimes[f.name] || pdfMtimes[f.name] !== f.mtime) {
-                console.log('Updated PDF detected:', f.name);
+            if (!pdfMtimes[f.name] || pdfMtimes[f.name] != f.mtime) {
+                console.log("Updated PDF detected:", f.name);
                 pdfMtimes[f.name] = f.mtime;
+
+                // Reload only if it's the current one being viewed
                 if (f.name === pdfFiles[currentIndex].name) {
-                    loadPDF(f.name); // reload current PDF if updated
+                    loadPDF(f.name);
                 }
             }
         });
+
+        pdfFiles = latest;
     } catch (e) {
         console.error('Error checking PDF updates:', e);
     }
 }
 
-// Initialize
 if (pdfFiles.length > 0) {
     loadPDF(pdfFiles[0].name);
     startSlideshow();
-    setInterval(checkForUpdates, 10 * 60 * 1000); // 10 minutes
+    setInterval(checkForUpdates, 10 * 60 * 1000);
 }
 </script>
 
