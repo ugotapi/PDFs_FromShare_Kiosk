@@ -85,13 +85,15 @@ PASTE IN TO A NEW FILE. MAKE SURE TO CHANGE THE CONFIGURATION AREA TO CONNECT TO
 #!/bin/bash
 
 # Configuration
-SERVER_IP="yourserver.domain.com"
+SERVER_IP="192.168.12.95"
 SHARE_NAME="pdfs"
-USERNAME="windowsuser"
-PASSWD="yoursupercoolpasswordforthewindowsshare"
-DOMAIN="machinename_or_domainshortname"
+USERNAME="user2"
+PASSWD="user2pass"
+DOMAIN="laptopordomain"
 MOUNT_POINT="/mnt/smb"
 LOCAL_DIR="/mnt/ramdisk/slideshow/pdfs"
+WEB_DIR="/mnt/ramdisk/slideshow"  
+PHP_INDEX="$WEB_DIR/index.php"
 
 # Create mount point if it doesn't exist
 sudo mkdir -p "$MOUNT_POINT"
@@ -109,21 +111,18 @@ sudo mkdir -p "$LOCAL_DIR"
 
 echo "🔍 Checking for new, updated, or missing files..."
 
-# Loop through each remote file
 find "$MOUNT_POINT" -type f | while read -r remote_file; do
     file_name=$(basename "$remote_file")
     local_file="$LOCAL_DIR/$file_name"
 
-    # If the file does not exist locally, copy it
     if [ ! -f "$local_file" ]; then
         echo "🆕 New file found: $file_name"
         sudo cp -p "$remote_file" "$local_file"
         continue
     fi
 
-    # Compare timestamps (copy if remote file is newer or changed)
-    remote_mtime=$(stat -c %Y "$remote_file" 2>/dev/null)
-    local_mtime=$(stat -c %Y "$local_file" 2>/dev/null)
+    remote_mtime=$(stat -c %Y "$remote_file")
+    local_mtime=$(stat -c %Y "$local_file")
 
     if [ "$remote_mtime" != "$local_mtime" ]; then
         echo "⬆️ File updated on share: $file_name"
@@ -132,11 +131,8 @@ find "$MOUNT_POINT" -type f | while read -r remote_file; do
 done
 
 echo "🧹 Checking for files to remove..."
-
-# Build a list of remote basenames
 remote_files=$(find "$MOUNT_POINT" -type f -exec basename {} \;)
 
-# Remove any local files that no longer exist remotely
 find "$LOCAL_DIR" -type f | while read -r local_file; do
     file_name=$(basename "$local_file")
     if ! grep -qxF "$file_name" <<< "$remote_files"; then
@@ -145,25 +141,24 @@ find "$LOCAL_DIR" -type f | while read -r local_file; do
     fi
 done
 
-echo "✅ Sync complete."
-
-# Unmount share
 echo "📤 Unmounting share..."
 sudo umount "$MOUNT_POINT"
-if [ $? -ne 0 ]; then
-    echo "⚠️ Failed to unmount share"
-    exit 1
-fi
 
-# Trigger slideshow refresh
+echo "📝 Regenerating pdf_files.json..."
+sudo php "$PHP_INDEX" --regen-cache
+
 echo "🎉 Refreshing slideshow..."
 sudo -u user WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000 /usr/bin/wtype -M ctrl -P F5 -p F5 -m ctrl
 
-echo "✅ Script completed successfully."
-# refresh web page by hitting ctrl F5
-/usr/bin/wtype -M ctrl -P F5
+echo "📣 Sending extra F5"
+usr/bin/wtype -M ctrl -P F5
 
+echo "✅ Script completed successfully."
 exit 0
+
+
+
+
 
 -----------------------------------------------------------------------------------------------------------------
 
