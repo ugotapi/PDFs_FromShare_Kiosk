@@ -67,6 +67,7 @@ PASTE:
 
 #dump html files to ramdisk that Apache is looking to run
 cp -a /home/user/slideshow /mnt/ramdisk
+sudo chown user:www-data -R /mnt/ramdisk/slideshow
 
 #kiosk mode chromium
 /usr/bin/chromium --new-window --window-position=0,0 --window-size=3840,2160 --incognito --user-data-dir=/home/user/.config/chromium --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --app=http://127.0.0.1/slideshow &
