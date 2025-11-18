@@ -15,7 +15,7 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 - The Windows share should be setup with a username and password to access. The refresh.sh is using syntax for a domain server. The trickest part is getting the sudo mount.cifs command correct. You can run refresh.sh manually, once you get your settings in the script. 
 - Create a unique user for your Windows share with no real other permissions since the password is on a text file on the Pi device. Meaning don't use admin accounts for the share. This setup is NOT secure because the Windows username and password are in a plain text file. 
 - This was done on a newly installed Raspberry Pi OS Novermber 2025. It used the default Display server and dooes not use older X Windows tools to make the kiosk work. 
-- It does labwc tweaks to display Chromiun in kiosk mode better, no window tops or sides. 
+- It does Labwc tweaks to display Chromiun in kiosk mode better, no window tops or sides. 
 
 
 INSTRUCTIONS:
