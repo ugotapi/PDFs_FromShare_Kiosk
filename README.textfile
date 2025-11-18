@@ -8,14 +8,14 @@ This is a collection of shell commands to create a Kiosk to display PDFs from a 
 - The files that Apache uses for the PDFs on the Pi Device are on a ramdisk. A ramdisk uses RAM to store files. This helps eliminate wear and tear to the microSD Card in the raspberry Pi devices.
 - On a reboot, the files on the ramdisk are deleted. Only the PDFs in /home/user/slideshow/pdfs are brought up on boot. The next sudo -e crontab will mirror the network files over.
 - The working html for Apache is copied over from the /home/user/slideshow folder for Apache to use for the slideshow.
-- the first script refresh.sh runs as a sudo to map the drive needed. 
+- The first script refresh.sh runs as a sudo to map the drive needed. 
 - There is a seond script that uses crontab as "user" and checks to see if Chromium crashes displaying the words "Aw, Snap". If the error messsage says Aw Snap. It stops and restarts Chromium.
 - The index.php uses pdf.js from Mozilla https://mozilla.github.io/pdf.js/ to display multipage pdfs and cycle to the next pdf. The time to display each pdf screen is in here. 
 - If a pdf is deleted from the network share and it is on the Pi pdfs folder it will be deleted from the Pi slideshow.
 - The Windows share should be setup with a username and password to access. The refresh.sh is using syntax for a domain server. The trickest part is getting the sudo mount.cifs command correct. You can run refresh.sh manually, once you get your settings in the script. 
 - Create a unique user for your Windows share with no real other permissions since the password is on a text file on the Pi device. Meaning don't use admin accounts for the share. This setup is NOT secure because the Windows username and password are in a plain text file. 
-- This was done on a newly installed Raspberry Pi OS Novermber 2025. It used the default Display server and dooes not use older X Windows tools to make the kiosk work. 
-- It does Labwc tweaks to display Chromiun in kiosk mode better, no window tops or sides. 
+- This was done on a newly installed Raspberry Pi OS Novermber 2025. That is based on Debian 13, also known as "Trixie. It used the default Display server and dooes not use older X Windows tools to make the kiosk work. 
+- It makes Labwc tweaks to display Chromiun in kiosk mode better, no window tops or sides. 
 
 
 INSTRUCTIONS:
