@@ -2,8 +2,8 @@
 This is a collection of shell commands to create a Kiosk to display PDFs from a Windows share on Raspberry Pi device & Raspberry PI OS - Debian Trixie. Installation is running the shell script to a terminal on the pi and Running it. 
 
 - This will display PDF files in a slideshow on your TV with a Pi device that are stored on a Windows PC or a servers network share.
-- Hides the mouse cursor via wtype and a.config/labwc/rc.xml edit
-- My scripts assume a username "user" in these scripts. Edit the commands if needed. Also when using nano creating these .sh scripts the folder they are in is assumed to be /home/user.
+- Hides the mouse cursor via wtype and a .config/labwc/rc.xml edit
+- My scripts assume a username named                                                                                                                                                                                                                        "user" in these scripts. Edit the commands if needed. Also when using nano creating these .sh scripts the folder they are in is assumed to be /home/user.
 - If a PDF is added to the network share on the next crontab run for refresh.sh, the file will be added to the slideshow on the Pi connected monitor.
 - The files that Apache uses for the PDFs on the Pi Device are on a ramdisk. A ramdisk uses RAM to store files. This helps eliminate wear and tear to the microSD Card in the raspberry Pi devices.
 - On a reboot, the files on the ramdisk are deleted. Only the PDFs in /home/user/slideshow/pdfs are brought up on boot. The next sudo -e crontab will mirror the network files over.
@@ -294,7 +294,7 @@ CustomLog ${APACHE_LOG_DIR}/access.log combined env=!dontlog
 -----------------------------------------------------------------------------------------------------------------
 sudo reboot
 
-PUT SOME UNIQUE PDFS IN YOUR WINDOWS SHARE:
+PUT SOME UNIQUE PDFS IN YOUR WINDOWS SHARE AND WAIT FOR THE NEXT sudo crontab -l run:
 
 
  
