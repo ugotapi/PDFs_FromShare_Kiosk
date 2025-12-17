@@ -135,6 +135,11 @@ function renderPage(num) {
 function nextPage() {
     if (!pdfDoc) return;
 
+    // Single PDF with single page → do nothing
+    if (pdfFiles.length === 1 && pdfDoc.numPages === 1) {
+        return;
+    }
+
     if (currentPageNum < pdfDoc.numPages) {
         currentPageNum++;
         renderPage(currentPageNum);
